@@ -1,0 +1,25 @@
+{
+	"nav": {
+		"home": "Inicio",
+		"events": "Eventos"
+	},
+	"home": {
+		"title": "Bienvenido a nuestro sitio web",
+		"subtitle": "Creando experiencias web increíbles con Nuxt y Tailwind CSS"
+	},
+	"about": {
+		"title": "Sobre nosotros",
+		"description": "Somos un equipo de desarrolladores apasionados por crear aplicaciones web hermosas y funcionales.",
+		"mission": "Nuestra misión",
+		"missionText": "Crear aplicaciones web hermosas y funcionales."
+	},
+	"events": {
+		"title": "Eventos",
+		"listTitle": "Próximos eventos",
+		"noEvents": "No hay eventos disponibles"
+	},
+	"footer": {
+		"quickLinks": "Enlaces rápidos",
+		"rights": "Todos los derechos reservados"
+	}
+}

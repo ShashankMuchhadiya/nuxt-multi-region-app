@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* Custom theme configuration */
+@theme {
+	/* Add custom colors, spacing, etc. here if needed */
+}
+
+/* Prevent horizontal scroll */
+html,
+body {
+	overflow-x: hidden;
+	max-width: 100vw;
+}
+
+/* Ensure RTL dropdown menus don't cause overflow */
+.relative {
+	overflow: visible;
+}
+
+/* Fix for RTL layouts to prevent content overflow */
+html[dir="rtl"] body {
+	overflow-x: hidden;
+}
