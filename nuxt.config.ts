@@ -126,7 +126,9 @@ export default defineNuxtConfig({
 	// Robots Configuration
 	robots: {
 		enabled: true,
-		allow: ["/"],
+		// Allow indexing in both dev and production (for SEO testing)
+		// NOTE: Make sure your dev site is not publicly accessible!
+		indexable: true,
 		disallow: [],
 		sitemap: `${process.env.NUXT_PUBLIC_SITE_URL || "https://yourwebsite.com"}/sitemap.xml`,
 	},
