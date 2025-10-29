@@ -1,5 +1,6 @@
 import { resolve } from "path";
 import tailwindcss from "@tailwindcss/vite";
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineNuxtConfig({
 	compatibilityDate: "2025-07-15",
@@ -36,29 +37,31 @@ export default defineNuxtConfig({
 	},
 
 	// Tailwind CSS configuration
-	css: [
-		"@/assets/css/main.css"
-	],
+	css: ["@/assets/css/main.css"],
 
-		vite: {
-		plugins: [tailwindcss()],
+	vite: {
+		plugins: [
+			tailwindcss(),
+			// Bundle analyzer - run 'npm run build' to generate stats.html
+			visualizer({
+				open: true,
+				filename: "stats.html",
+				gzipSize: true,
+				brotliSize: true,
+			}),
+		],
 		build: {
 			cssMinify: true,
 			rollupOptions: {
 				output: {
 					manualChunks: {
 						vendor: ["vue", "vue-router"],
-						i18n: ["@nuxtjs/i18n"],
-						ui: ["@nuxt/ui"],
 					},
 				},
 			},
 		},
 		optimizeDeps: {
 			include: ["vue", "vue-router"],
-		},
-		ssr: {
-			noExternal: ["@nuxt/ui"],
 		},
 	},
 

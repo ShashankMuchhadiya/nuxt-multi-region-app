@@ -4,6 +4,7 @@
 	"private": true,
 	"scripts": {
 		"build": "nuxt build",
+		"build:analyze": "nuxt build --analyze",
 		"dev": "nuxt dev",
 		"generate": "nuxt generate",
 		"preview": "nuxt preview",
@@ -26,6 +27,7 @@
 		"@tailwindcss/vite": "^4.1.14",
 		"@types/node": "^24.8.1",
 		"prettier": "^3.6.2",
+		"rollup-plugin-visualizer": "^6.0.5",
 		"tailwindcss": "^4.1.14",
 		"typescript": "^5.9.3",
 		"vue-tsc": "^3.1.1"

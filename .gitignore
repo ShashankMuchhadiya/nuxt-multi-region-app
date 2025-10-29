@@ -6,6 +6,9 @@
 .cache
 dist
 
+# Bundle analyzer
+stats.html
+
 # Node dependencies
 node_modules
 
