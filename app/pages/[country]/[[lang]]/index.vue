@@ -22,7 +22,7 @@
 			</div>
 		</section>
 
-		<AboutUs />
+		<LazyAboutUs />
 	</div>
 </template>
 

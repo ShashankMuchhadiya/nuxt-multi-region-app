@@ -14,9 +14,22 @@
 <script setup lang="ts">
 const { isLoading } = useLanguageLoading();
 
-// Base SEO configuration
+// Base SEO configuration with performance optimizations
 useHead({
 	titleTemplate: "%s | Multi-Region Multi-Language App",
-	meta: [{ charset: "utf-8" }, { name: "viewport", content: "width=device-width, initial-scale=1" }],
+	meta: [
+		{ charset: "utf-8" },
+		{ name: "viewport", content: "width=device-width, initial-scale=1" },
+		// Performance hints
+		{ name: "format-detection", content: "telephone=no" },
+	],
+	htmlAttrs: {
+		lang: "en",
+	},
+	link: [
+		// Prefetch critical routes
+		{ rel: "prefetch", href: "/in" },
+		{ rel: "prefetch", href: "/in/events" },
+	],
 });
 </script>

@@ -41,22 +41,38 @@ export const useMultiLocale = () => {
 		return currentLanguage.value?.code === currentCountry.value.defaultLang;
 	});
 
-	// Sync i18n locale with current language
+	// Sync i18n locale with current language - defer to avoid blocking
 	watch(
 		currentLanguage,
 		newLang => {
 			if (newLang && locale.value !== newLang.code) {
-				setLocale(newLang.code as typeof locale.value);
+				// Use requestIdleCallback to defer non-critical locale updates
+				if (import.meta.client && 'requestIdleCallback' in window) {
+					requestIdleCallback(() => {
+						setLocale(newLang.code as typeof locale.value);
+					});
+				} else {
+					setLocale(newLang.code as typeof locale.value);
+				}
 			}
 		},
 		{ immediate: true }
 	);
 
-	// Ensure locale is set correctly on both server and client
+	// Ensure locale is set correctly on both server and client - defer on client
 	onMounted(() => {
 		const lang = currentLanguage.value;
 		if (lang && locale.value !== lang.code) {
-			setLocale(lang.code as typeof locale.value);
+			// Defer locale setting to avoid blocking initial render
+			if ('requestIdleCallback' in window) {
+				requestIdleCallback(() => {
+					setLocale(lang.code as typeof locale.value);
+				});
+			} else {
+				setTimeout(() => {
+					setLocale(lang.code as typeof locale.value);
+				}, 0);
+			}
 		}
 	});
 

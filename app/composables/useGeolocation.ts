@@ -73,7 +73,15 @@ export const useGeolocation = () => {
 				? `https://ipapi.co/${ip}/json/?key=${apiKey}`
 				: `https://ipapi.co/json/?key=${apiKey}`;
 
-			const response = await $fetch<GeolocationData | GeolocationError>(url);
+			// Use AbortController for timeout to prevent long blocking
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+			const response = await $fetch<GeolocationData | GeolocationError>(url, {
+				signal: controller.signal,
+			});
+			
+			clearTimeout(timeoutId);
 
 			// Check if the response contains an error
 			if ("error" in response && response.error) {

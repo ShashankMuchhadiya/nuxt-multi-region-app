@@ -10,13 +10,19 @@ export default defineNuxtPlugin(async () => {
 		return;
 	}
 
-	// Add a small delay to ensure everything is ready
-	setTimeout(async () => {
+	// Defer geolocation to reduce TBT using requestIdleCallback
+	requestIdleCallback(async () => {
 		try {
 			const { getCurrentLocation } = useGeolocation();
 			const { getCountryFromIpapi, detectLanguageForCountry } = await import("@/app/config/locales");
 
-			const geolocationData = await getCurrentLocation();
+			// Add timeout to prevent long blocking
+			const geolocationData = await Promise.race([
+				getCurrentLocation(),
+				new Promise<null>((_, reject) => 
+					setTimeout(() => reject(new Error('Geolocation timeout')), 3000)
+				)
+			]);
 
 			if (geolocationData && geolocationData.country_code) {
 				try {
@@ -72,5 +78,5 @@ export default defineNuxtPlugin(async () => {
 		if (route.path !== `/${defaultCountry.code}`) {
 			await router.push(`/${defaultCountry.code}`);
 		}
-	}, 500);
+	});
 });

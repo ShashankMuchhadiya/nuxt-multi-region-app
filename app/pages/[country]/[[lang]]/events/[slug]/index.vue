@@ -30,7 +30,10 @@
 const route = useRoute();
 const { currentLanguage, currentCountry } = useMultiLocale();
 
-const slug = computed(() => route.params.slug as string);
+const slug = computed(() => {
+	const routeParams = route.params as { slug?: string };
+	return routeParams.slug || "";
+});
 
 // Event detail translations for all languages
 const eventDetailTranslations: Record<

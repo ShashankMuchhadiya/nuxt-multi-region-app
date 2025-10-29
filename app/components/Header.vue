@@ -101,35 +101,6 @@
 					</div>
 				</div>
 
-				<!-- Mobile Menu Button -->
-				<button
-					class="flex items-center justify-center rounded-lg p-2 text-gray-600 hover:bg-gray-100 md:hidden"
-					aria-label="Toggle menu"
-					@click="mobileMenuOpen = !mobileMenuOpen"
-				>
-					<svg
-						v-if="!mobileMenuOpen"
-						class="h-6 w-6"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M4 6h16M4 12h16M4 18h16"
-						/>
-					</svg>
-					<svg v-else class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M6 18L18 6M6 6l12 12"
-						/>
-					</svg>
-				</button>
 			</div>
 
 			<!-- Mobile Navigation -->
@@ -221,44 +192,61 @@ const { isLoading, startLoading, stopLoading } = useLanguageLoading();
 const isRTL = computed(() => currentLanguage.value?.code === "ar");
 
 // Scroll detection for glass effect
-if (import.meta.client) {
-	onMounted(() => {
-		let ticking = false;
+	if (import.meta.client) {
+		onMounted(() => {
+			let ticking = false;
+			let lastScrollY = 0;
 
-		const handleScroll = () => {
-			if (!ticking) {
-				window.requestAnimationFrame(() => {
-					const currentScrollY = window.scrollY;
-					
-					// Show glass effect when scrolled down
-					if (currentScrollY > 50) {
-						isScrolled.value = true;
-					} else {
-						isScrolled.value = false;
+			const handleScroll = () => {
+				if (!ticking) {
+					window.requestAnimationFrame(() => {
+						const currentScrollY = window.scrollY;
+						
+						// Only update if scroll direction changed significantly
+						if (Math.abs(currentScrollY - lastScrollY) > 10) {
+							if (currentScrollY > 50) {
+								isScrolled.value = true;
+							} else {
+								isScrolled.value = false;
+							}
+							lastScrollY = currentScrollY;
+						}
+
+						ticking = false;
+					});
+
+					ticking = true;
+				}
+			};
+
+			// Throttle scroll events more aggressively
+			let scrollTimeout: NodeJS.Timeout;
+			const throttledScroll = () => {
+				clearTimeout(scrollTimeout);
+				scrollTimeout = setTimeout(handleScroll, 16); // ~60fps
+			};
+
+			window.addEventListener("scroll", throttledScroll, { passive: true });
+
+			// Defer click handler to avoid blocking
+			const handleClick = (e: Event) => {
+				requestIdleCallback(() => {
+					const target = e.target as HTMLElement;
+					if (!target.closest(".relative")) {
+						dropdownOpen.value = false;
 					}
-
-					ticking = false;
 				});
+			};
 
-				ticking = true;
-			}
-		};
+			document.addEventListener("click", handleClick);
 
-		window.addEventListener("scroll", handleScroll, { passive: true });
-
-		// Close dropdown when clicking outside
-		document.addEventListener("click", e => {
-			const target = e.target as HTMLElement;
-			if (!target.closest(".relative")) {
-				dropdownOpen.value = false;
-			}
+			onUnmounted(() => {
+				window.removeEventListener("scroll", throttledScroll);
+				document.removeEventListener("click", handleClick);
+				clearTimeout(scrollTimeout);
+			});
 		});
-
-		onUnmounted(() => {
-			window.removeEventListener("scroll", handleScroll);
-		});
-	});
-}
+	}
 
 // Function to select language
 type Country = {

@@ -36,15 +36,53 @@ export default defineNuxtConfig({
 	},
 
 	// Tailwind CSS configuration
-	css: ["@/assets/css/main.css"],
+	css: [
+		"@/assets/css/main.css"
+	],
 
-	vite: {
+		vite: {
 		plugins: [tailwindcss()],
+		build: {
+			cssMinify: true,
+			rollupOptions: {
+				output: {
+					manualChunks: {
+						vendor: ["vue", "vue-router"],
+						i18n: ["@nuxtjs/i18n"],
+						ui: ["@nuxt/ui"],
+					},
+				},
+			},
+		},
+		optimizeDeps: {
+			include: ["vue", "vue-router"],
+		},
+		ssr: {
+			noExternal: ["@nuxt/ui"],
+		},
 	},
 
-	// Content Security Policy configuration
+	// Performance optimizations
 	experimental: {
 		payloadExtraction: false,
+		typedPages: true,
+		watcher: "chokidar-granular",
+	},
+
+	// Build optimizations for TBT
+	build: {
+		transpile: [],
+	},
+
+	// App configuration for performance
+	app: {
+		head: {
+			link: [
+				// Preconnect to external domains for faster loading
+				{ rel: "preconnect", href: "https://ipapi.co" },
+				{ rel: "dns-prefetch", href: "https://ipapi.co" },
+			],
+		},
 	},
 
 	// SEO Configuration
@@ -130,11 +168,26 @@ export default defineNuxtConfig({
 		sitemap: `${process.env.NUXT_PUBLIC_SITE_URL || "https://yourwebsite.com"}/sitemap.xml`,
 	},
 
-	// Security headers including CSP
+	// Security headers including CSP and Performance headers
 	nitro: {
+		compressPublicAssets: true,
 		routeRules: {
+			// Homepage - ISR with revalidation
+			"/": {
+				prerender: false,
+				headers: {
+					"Cache-Control": "public, max-age=60, must-revalidate",
+				},
+			},
+			// Country/lang routes - ISR with longer cache
 			"/**": {
 				headers: {
+					"X-Content-Type-Options": "nosniff",
+					"X-Frame-Options": "DENY",
+					"X-XSS-Protection": "1; mode=block",
+					"Referrer-Policy": "strict-origin-when-cross-origin",
+					"Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+					"Cache-Control": "public, max-age=300, stale-while-revalidate=600",
 					"Content-Security-Policy":
 						process.env.NODE_ENV === "development"
 							? [
@@ -162,6 +215,18 @@ export default defineNuxtConfig({
 									"base-uri 'self'",
 									"form-action 'self'",
 								].join("; "),
+				},
+			},
+			// Static assets - long cache
+			"/_nuxt/**": {
+				headers: {
+					"Cache-Control": "public, max-age=31536000, immutable",
+				},
+			},
+			// Locale files - cache
+			"/i18n/**": {
+				headers: {
+					"Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
 				},
 			},
 		},
