@@ -1,5 +1,12 @@
 <template>
-	<header class="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-md">
+	<header
+		:class="[
+			'sticky top-0 z-50 border-b transition-all duration-300',
+			isScrolled
+				? 'bg-white/95 backdrop-blur-lg shadow-sm border-gray-200/50'
+				: 'bg-white/80 backdrop-blur-md border-gray-200',
+		]"
+	>
 		<div class="container mx-auto px-4">
 			<div class="flex h-16 items-center justify-between">
 				<!-- Logo -->
@@ -41,7 +48,7 @@
 						<div
 							v-if="dropdownOpen"
 							:class="[
-								'absolute mt-2 w-64 rounded-lg border border-gray-200 bg-white shadow-lg',
+								'absolute mt-2 w-64 rounded-lg border border-gray-200 bg-white shadow-lg z-50',
 								isRTL ? 'left-0' : 'right-0',
 							]"
 						>
@@ -204,6 +211,7 @@
 <script setup lang="ts">
 const mobileMenuOpen = ref(false);
 const dropdownOpen = ref(false);
+const isScrolled = ref(false);
 
 const { t } = useI18n(); // Use i18n translation function
 const { currentCountry, currentLanguage, countries, switchLanguage } = useMultiLocale();
@@ -211,6 +219,46 @@ const { isLoading, startLoading, stopLoading } = useLanguageLoading();
 
 // Check if current language is RTL
 const isRTL = computed(() => currentLanguage.value?.code === "ar");
+
+// Scroll detection for glass effect
+if (import.meta.client) {
+	onMounted(() => {
+		let ticking = false;
+
+		const handleScroll = () => {
+			if (!ticking) {
+				window.requestAnimationFrame(() => {
+					const currentScrollY = window.scrollY;
+					
+					// Show glass effect when scrolled down
+					if (currentScrollY > 50) {
+						isScrolled.value = true;
+					} else {
+						isScrolled.value = false;
+					}
+
+					ticking = false;
+				});
+
+				ticking = true;
+			}
+		};
+
+		window.addEventListener("scroll", handleScroll, { passive: true });
+
+		// Close dropdown when clicking outside
+		document.addEventListener("click", e => {
+			const target = e.target as HTMLElement;
+			if (!target.closest(".relative")) {
+				dropdownOpen.value = false;
+			}
+		});
+
+		onUnmounted(() => {
+			window.removeEventListener("scroll", handleScroll);
+		});
+	});
+}
 
 // Function to select language
 type Country = {
@@ -250,16 +298,4 @@ const selectLanguage = async (country: Country, language: Language) => {
 		stopLoading();
 	}
 };
-
-// Close dropdown when clicking outside
-if (import.meta.client) {
-	onMounted(() => {
-		document.addEventListener("click", e => {
-			const target = e.target as HTMLElement;
-			if (!target.closest(".relative")) {
-				dropdownOpen.value = false;
-			}
-		});
-	});
-}
 </script>

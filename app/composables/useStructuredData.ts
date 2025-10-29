@@ -38,7 +38,7 @@ interface EventSchema {
 export const useStructuredData = () => {
 	const route = useRoute();
 	const config = useRuntimeConfig();
-	const siteUrl = config.public.siteUrl || "https://yourwebsite.com";
+	const siteUrl = String(config.public.siteUrl || "https://yourwebsite.com");
 
 	/**
 	 * Add Organization structured data
@@ -61,7 +61,7 @@ export const useStructuredData = () => {
 			script: [
 				{
 					type: "application/ld+json",
-					children: JSON.stringify(schema),
+					innerHTML: JSON.stringify(schema),
 				},
 			],
 		});
@@ -84,7 +84,7 @@ export const useStructuredData = () => {
 			script: [
 				{
 					type: "application/ld+json",
-					children: JSON.stringify(schema),
+					innerHTML: JSON.stringify(schema),
 				},
 			],
 		});
@@ -130,7 +130,7 @@ export const useStructuredData = () => {
 			script: [
 				{
 					type: "application/ld+json",
-					children: JSON.stringify(schema),
+					innerHTML: JSON.stringify(schema),
 				},
 			],
 		});
@@ -157,7 +157,7 @@ export const useStructuredData = () => {
 			script: [
 				{
 					type: "application/ld+json",
-					children: JSON.stringify(schema),
+					innerHTML: JSON.stringify(schema),
 				},
 			],
 		});

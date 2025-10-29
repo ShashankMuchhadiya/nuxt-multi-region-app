@@ -1,6 +1,7 @@
 import {
 	countries,
 	getCountry,
+	getCountryFromIpapi,
 	defaultCountry,
 	defaultLanguage,
 	isValidLanguage,
@@ -19,7 +20,9 @@ export const useMultiLocale = () => {
 		const countryCode = pathSegments[0];
 
 		if (!countryCode) return defaultCountry;
-		const country = getCountry(countryCode);
+
+		// Try to get predefined country first, then create dynamic country
+		const country = getCountry(countryCode) || getCountryFromIpapi(countryCode);
 		return country ?? defaultCountry;
 	});
 

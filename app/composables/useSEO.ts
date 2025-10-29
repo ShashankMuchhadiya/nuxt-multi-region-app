@@ -37,13 +37,13 @@ export const useSEO = (options: SEOOptions = {}) => {
 	// Add alternate links for available languages in this country
 	currentCountry.value?.languages?.forEach(lang => {
 		const langTag = languageMap[lang.code] || "en-US";
-		const isDefault = lang.code === currentCountry.value.defaultLang;
+		const isDefault = lang.code === currentCountry.value?.defaultLang;
 
 		// Extract the path after country and language
 		const pathSegments = route.path.split("/").filter(Boolean);
 		let restOfPath = "";
 
-		if (pathSegments.length > 1 && languageMap[pathSegments[1]]) {
+		if (pathSegments.length > 1 && pathSegments[1] && languageMap[pathSegments[1]]) {
 			restOfPath = pathSegments.slice(2).join("/");
 		} else {
 			restOfPath = pathSegments.slice(1).join("/");
@@ -51,8 +51,8 @@ export const useSEO = (options: SEOOptions = {}) => {
 
 		const basePath = restOfPath ? `/${restOfPath}` : "";
 		const alternatePath = isDefault
-			? `/${currentCountry.value.code}${basePath}`
-			: `/${currentCountry.value.code}/${lang.code}${basePath}`;
+			? `/${currentCountry.value?.code}${basePath}`
+			: `/${currentCountry.value?.code}/${lang.code}${basePath}`;
 
 		alternateLinks.push({
 			rel: "alternate",

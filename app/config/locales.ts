@@ -89,16 +89,22 @@ export function getCountry(code: string): Country | undefined {
 	return countries.find(c => c.code === code);
 }
 
-export const defaultCountry: Country = countries[0]; // India
-export const defaultLanguage: Language = defaultCountry.languages[0]; // English
+export const defaultCountry: Country = countries[0]!;
+export const defaultLanguage: Language = defaultCountry.languages[0]!;
 
 export function isValidCountry(code: string): boolean {
-	return countries.some(c => c.code === code);
+	// Accept any 2-letter country code (ISO 3166-1 alpha-2)
+	return /^[a-z]{2}$/i.test(code);
 }
 
 export function isValidLanguage(countryCode: string, langCode: string): boolean {
 	const country = getCountry(countryCode);
-	return country?.languages.some(l => l.code === langCode) ?? false;
+	if (country) {
+		return country.languages.some(l => l.code === langCode);
+	}
+
+	// For dynamic countries (not in our predefined list), only English is valid
+	return langCode === "en";
 }
 
 /**
@@ -124,118 +130,150 @@ export const ipapiCountryMapping: Record<string, string> = {
 	uae: "ae", // UAE alternative
 	ksa: "sa", // Saudi Arabia alternative
 
-	// Regional mappings for countries not in our list
-	ca: "us", // Canada -> US (English)
-	au: "gb", // Australia -> UK (English)
-	nz: "gb", // New Zealand -> UK (English)
-	it: "fr", // Italy -> France (closest European)
-	nl: "de", // Netherlands -> Germany (closest European)
-	be: "fr", // Belgium -> France (closest European)
-	ch: "de", // Switzerland -> Germany (closest European)
-	at: "de", // Austria -> Germany (closest European)
-	pt: "es", // Portugal -> Spain (closest European)
-	pl: "de", // Poland -> Germany (closest European)
-	cz: "de", // Czech Republic -> Germany (closest European)
-	hu: "de", // Hungary -> Germany (closest European)
-	se: "de", // Sweden -> Germany (closest European)
-	no: "de", // Norway -> Germany (closest European)
-	dk: "de", // Denmark -> Germany (closest European)
-	fi: "de", // Finland -> Germany (closest European)
-	ie: "gb", // Ireland -> UK (closest English)
-	za: "gb", // South Africa -> UK (closest English)
-	eg: "ae", // Egypt -> UAE (closest Middle East)
-	jo: "ae", // Jordan -> UAE (closest Middle East)
-	lb: "ae", // Lebanon -> UAE (closest Middle East)
-	kw: "ae", // Kuwait -> UAE (closest Middle East)
-	qa: "ae", // Qatar -> UAE (closest Middle East)
-	bh: "ae", // Bahrain -> UAE (closest Middle East)
-	om: "ae", // Oman -> UAE (closest Middle East)
-	pk: "in", // Pakistan -> India (closest South Asian)
-	bd: "in", // Bangladesh -> India (closest South Asian)
-	lk: "in", // Sri Lanka -> India (closest South Asian)
-	np: "in", // Nepal -> India (closest South Asian)
-	bt: "in", // Bhutan -> India (closest South Asian)
-	mv: "in", // Maldives -> India (closest South Asian)
-	my: "in", // Malaysia -> India (closest Asian)
-	sg: "in", // Singapore -> India (closest Asian)
-	th: "in", // Thailand -> India (closest Asian)
-	ph: "in", // Philippines -> India (closest Asian)
-	id: "in", // Indonesia -> India (closest Asian)
-	vn: "in", // Vietnam -> India (closest Asian)
-	kr: "in", // South Korea -> India (closest Asian)
-	jp: "in", // Japan -> India (closest Asian)
-	cn: "in", // China -> India (closest Asian)
-	tw: "in", // Taiwan -> India (closest Asian)
-	hk: "in", // Hong Kong -> India (closest Asian)
-	mo: "in", // Macau -> India (closest Asian)
-	br: "us", // Brazil -> US (closest Americas)
-	mx: "us", // Mexico -> US (closest Americas)
-	ar: "us", // Argentina -> US (closest Americas)
-	cl: "us", // Chile -> US (closest Americas)
-	co: "us", // Colombia -> US (closest Americas)
-	pe: "us", // Peru -> US (closest Americas)
-	ve: "us", // Venezuela -> US (closest Americas)
-	ec: "us", // Ecuador -> US (closest Americas)
-	uy: "us", // Uruguay -> US (closest Americas)
-	py: "us", // Paraguay -> US (closest Americas)
-	bo: "us", // Bolivia -> US (closest Americas)
-	cr: "us", // Costa Rica -> US (closest Americas)
-	pa: "us", // Panama -> US (closest Americas)
-	gt: "us", // Guatemala -> US (closest Americas)
-	hn: "us", // Honduras -> US (closest Americas)
-	sv: "us", // El Salvador -> US (closest Americas)
-	ni: "us", // Nicaragua -> US (closest Americas)
-	cu: "us", // Cuba -> US (closest Americas)
-	do: "us", // Dominican Republic -> US (closest Americas)
-	ht: "us", // Haiti -> US (closest Americas)
-	jm: "us", // Jamaica -> US (closest Americas)
-	tt: "us", // Trinidad and Tobago -> US (closest Americas)
-	bb: "us", // Barbados -> US (closest Americas)
-	ru: "de", // Russia -> Germany (closest European)
-	ua: "de", // Ukraine -> Germany (closest European)
-	by: "de", // Belarus -> Germany (closest European)
-	md: "de", // Moldova -> Germany (closest European)
-	lt: "de", // Lithuania -> Germany (closest European)
-	lv: "de", // Latvia -> Germany (closest European)
-	ee: "de", // Estonia -> Germany (closest European)
-	bg: "de", // Bulgaria -> Germany (closest European)
-	ro: "de", // Romania -> Germany (closest European)
-	hr: "de", // Croatia -> Germany (closest European)
-	si: "de", // Slovenia -> Germany (closest European)
-	sk: "de", // Slovakia -> Germany (closest European)
-	rs: "de", // Serbia -> Germany (closest European)
-	ba: "de", // Bosnia and Herzegovina -> Germany (closest European)
-	me: "de", // Montenegro -> Germany (closest European)
-	mk: "de", // North Macedonia -> Germany (closest European)
-	al: "de", // Albania -> Germany (closest European)
-	gr: "de", // Greece -> Germany (closest European)
-	cy: "de", // Cyprus -> Germany (closest European)
-	mt: "de", // Malta -> Germany (closest European)
-	lu: "de", // Luxembourg -> Germany (closest European)
-	is: "de", // Iceland -> Germany (closest European)
-	li: "de", // Liechtenstein -> Germany (closest European)
-	ad: "de", // Andorra -> Germany (closest European)
-	mc: "de", // Monaco -> Germany (closest European)
-	sm: "de", // San Marino -> Germany (closest European)
-	va: "de", // Vatican City -> Germany (closest European)
+	// Note: All country mappings have been removed
+	// Unmapped countries will now use their actual country code with English content
+	// Example: AU -> /au, CA -> /ca, etc.
 };
 
 /**
  * Get our app's country code from ipapi.co country code
  * @param ipapiCountryCode - Country code returned by ipapi.co
- * @returns Our app's country code or default country if not found
+ * @returns Our app's country code or the original country code if not found
  */
 export function mapIpapiCountryToAppCountry(ipapiCountryCode: string): string {
 	const mappedCode = ipapiCountryMapping[ipapiCountryCode.toLowerCase()];
-	return mappedCode || defaultCountry.code;
+	return mappedCode || ipapiCountryCode.toLowerCase();
 }
 
 /**
  * Get country from ipapi.co country code
  * @param ipapiCountryCode - Country code returned by ipapi.co
- * @returns Country object or default country if not found
+ * @returns Country object or a dynamic country with English language if not found
  */
 export function getCountryFromIpapi(ipapiCountryCode: string): Country {
 	const appCountryCode = mapIpapiCountryToAppCountry(ipapiCountryCode);
-	return getCountry(appCountryCode) || defaultCountry;
+	const existingCountry = getCountry(appCountryCode);
+
+	if (existingCountry) {
+		return existingCountry;
+	}
+
+	// Create a dynamic country for unmapped country codes
+	return {
+		code: appCountryCode,
+		name: ipapiCountryCode.toUpperCase(), // Use uppercase for display
+		flag: "🌍", // Default globe flag for unmapped countries
+		defaultLang: "en",
+		languages: [{ code: "en", name: "English" }],
+	};
+}
+
+/**
+ * Maps language codes from ipapi.co to our supported language codes
+ * This handles cases where the API returns different language codes than what we use
+ */
+export const languageMapping: Record<string, string> = {
+	// Direct mappings
+	en: "en",
+	ar: "ar",
+	fr: "fr",
+	de: "de",
+	es: "es",
+
+	// Alternative mappings
+	"en-US": "en",
+	"en-GB": "en",
+	"en-CA": "en",
+	"en-AU": "en",
+	"en-NZ": "en",
+	"en-ZA": "en",
+	"en-IE": "en",
+	"en-IN": "en",
+	"ar-AE": "ar",
+	"ar-SA": "ar",
+	"ar-EG": "ar",
+	"ar-JO": "ar",
+	"ar-LB": "ar",
+	"ar-KW": "ar",
+	"ar-QA": "ar",
+	"ar-BH": "ar",
+	"ar-OM": "ar",
+	"fr-FR": "fr",
+	"fr-CA": "fr",
+	"fr-BE": "fr",
+	"fr-CH": "fr",
+	"fr-LU": "fr",
+	"fr-MC": "fr",
+	"de-DE": "de",
+	"de-AT": "de",
+	"de-CH": "de",
+	"de-LI": "de",
+	"de-LU": "de",
+	"es-ES": "es",
+	"es-MX": "es",
+	"es-AR": "es",
+	"es-CL": "es",
+	"es-CO": "es",
+	"es-PE": "es",
+	"es-VE": "es",
+	"es-EC": "es",
+	"es-UY": "es",
+	"es-PY": "es",
+	"es-BO": "es",
+	"es-CR": "es",
+	"es-PA": "es",
+	"es-GT": "es",
+	"es-HN": "es",
+	"es-SV": "es",
+	"es-NI": "es",
+	"es-CU": "es",
+	"es-DO": "es",
+	"es-HT": "es",
+	"es-JM": "es",
+	"es-TT": "es",
+	"es-BB": "es",
+};
+
+/**
+ * Detect the best language for a country based on ipapi.co language data
+ * @param country - The country object
+ * @param apiLanguages - Languages string from ipapi.co (e.g., "en-US,es-US,haw,fr")
+ * @returns The best matching language code for the country
+ */
+export function detectLanguageForCountry(country: Country, apiLanguages: string): string {
+	// Split the languages string and clean up
+	const languages = apiLanguages
+		.split(",")
+		.map(lang => lang.trim())
+		.filter(lang => lang.length > 0);
+
+	// First, try to find an exact match for the country's supported languages
+	for (const supportedLang of country.languages) {
+		for (const apiLang of languages) {
+			// Direct match
+			if (apiLang === supportedLang.code) {
+				return supportedLang.code;
+			}
+			// Mapped match
+			const mappedLang = languageMapping[apiLang];
+			if (mappedLang === supportedLang.code) {
+				return supportedLang.code;
+			}
+		}
+	}
+
+	// If no exact match, try to find a partial match (e.g., "en" in "en-US")
+	for (const supportedLang of country.languages) {
+		for (const apiLang of languages) {
+			if (
+				apiLang.startsWith(supportedLang.code + "-") ||
+				apiLang.startsWith(supportedLang.code + "_")
+			) {
+				return supportedLang.code;
+			}
+		}
+	}
+
+	// Fallback to the country's default language
+	return country.defaultLang;
 }

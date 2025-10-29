@@ -52,13 +52,11 @@ export const useGeolocation = () => {
 		const isCacheValid = geolocationData.value && now - globalLastFetch.value < CACHE_DURATION && !ip; // Only use cache for current user's IP, not specific IPs
 
 		if (isCacheValid) {
-			console.log("Using cached geolocation data");
 			return geolocationData.value;
 		}
 
 		// Check if already loading
 		if (isLoading.value) {
-			console.log("Geolocation request already in progress, waiting...");
 			// Wait for current request to complete
 			while (isLoading.value) {
 				await new Promise(resolve => setTimeout(resolve, 100));
@@ -70,19 +68,21 @@ export const useGeolocation = () => {
 		error.value = null;
 
 		try {
-			const url = ip ? `https://ipapi.co/${ip}/json/` : "https://ipapi.co/json/";
-			console.log(`Fetching geolocation data from: ${url}`);
+			const apiKey = "UdZuFpBAhP05tXTvdVQJmKQwDlMGWj5ff0z3qfhf7F42WObLci";
+			const url = ip
+				? `https://ipapi.co/${ip}/json/?key=${apiKey}`
+				: `https://ipapi.co/json/?key=${apiKey}`;
 
 			const response = await $fetch<GeolocationData | GeolocationError>(url);
 
 			// Check if the response contains an error
 			if ("error" in response && response.error) {
+				console.error("API returned error:", response.reason);
 				throw new Error(response.reason || "Geolocation lookup failed");
 			}
 
 			geolocationData.value = response as GeolocationData;
 			globalLastFetch.value = now;
-			console.log("Geolocation data cached successfully");
 			return geolocationData.value;
 		} catch (err) {
 			const errorMessage = err instanceof Error ? err.message : "Failed to get geolocation data";
@@ -118,7 +118,10 @@ export const useGeolocation = () => {
 		ip?: string
 	): Promise<string | number | boolean | null> => {
 		try {
-			const url = ip ? `https://ipapi.co/${ip}/${field}/` : `https://ipapi.co/${field}/`;
+			const apiKey = "UdZuFpBAhP05tXTvdVQJmKQwDlMGWj5ff0z3qfhf7F42WObLci";
+			const url = ip
+				? `https://ipapi.co/${ip}/${field}/?key=${apiKey}`
+				: `https://ipapi.co/${field}/?key=${apiKey}`;
 
 			const response = await $fetch<string | number | boolean>(url);
 			return response;
@@ -167,7 +170,6 @@ export const useGeolocation = () => {
 		geolocationData.value = null;
 		globalLastFetch.value = 0;
 		error.value = null;
-		console.log("Geolocation cache cleared");
 	};
 
 	/**
