@@ -77,6 +77,15 @@ export default defineNuxtConfig({
 		transpile: [],
 	},
 
+	// Runtime configuration (avoid hardcoded secrets in code)
+	runtimeConfig: {
+		// Private keys (server only)
+		ipapiKey: process.env.IPAPI_KEY || "",
+		public: {
+			siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://yourwebsite.com",
+		},
+	},
+
 	// App configuration for performance
 	app: {
 		head: {
@@ -189,6 +198,9 @@ export default defineNuxtConfig({
 					"X-Frame-Options": "DENY",
 					"X-XSS-Protection": "1; mode=block",
 					"Referrer-Policy": "strict-origin-when-cross-origin",
+					// Opt-in cross-origin isolation protections
+					"Cross-Origin-Opener-Policy": "same-origin",
+					"Cross-Origin-Resource-Policy": "same-origin",
 					"Permissions-Policy": "geolocation=(), microphone=(), camera=()",
 					"Cache-Control": "public, max-age=300, stale-while-revalidate=600",
 					"Content-Security-Policy":
@@ -209,7 +221,8 @@ export default defineNuxtConfig({
 							: [
 									// Production CSP (more restrictive)
 									"default-src 'self'",
-									"script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+									// Avoid unsafe-eval; keep minimal inline styles if needed by framework
+									"script-src 'self'",
 									"style-src 'self' 'unsafe-inline'",
 									"img-src 'self' data: https:",
 									"font-src 'self' data:",
@@ -218,6 +231,10 @@ export default defineNuxtConfig({
 									"base-uri 'self'",
 									"form-action 'self'",
 								].join("; "),
+					// Enforce HTTPS (set only in production environments behind TLS)
+					...(process.env.NODE_ENV === "production"
+						? { "Strict-Transport-Security": "max-age=15552000; includeSubDomains; preload" }
+						: {}),
 				},
 			},
 			// Static assets - long cache

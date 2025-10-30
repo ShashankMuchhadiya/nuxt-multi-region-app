@@ -41,6 +41,7 @@ export const useGeolocation = () => {
 	const geolocationData = globalGeolocationData;
 	const isLoading = globalIsLoading;
 	const error = globalError;
+	const config = useRuntimeConfig();
 
 	/**
 	 * Get geolocation data for a specific IP address
@@ -68,7 +69,7 @@ export const useGeolocation = () => {
 		error.value = null;
 
 		try {
-			const apiKey = "UdZuFpBAhP05tXTvdVQJmKQwDlMGWj5ff0z3qfhf7F42WObLci";
+			const apiKey = config.public?.ipapiKey || config.ipapiKey || "";
 			const url = ip
 				? `https://ipapi.co/${ip}/json/?key=${apiKey}`
 				: `https://ipapi.co/json/?key=${apiKey}`;
@@ -80,7 +81,7 @@ export const useGeolocation = () => {
 			const response = await $fetch<GeolocationData | GeolocationError>(url, {
 				signal: controller.signal,
 			});
-			
+
 			clearTimeout(timeoutId);
 
 			// Check if the response contains an error
@@ -126,7 +127,7 @@ export const useGeolocation = () => {
 		ip?: string
 	): Promise<string | number | boolean | null> => {
 		try {
-			const apiKey = "UdZuFpBAhP05tXTvdVQJmKQwDlMGWj5ff0z3qfhf7F42WObLci";
+			const apiKey = config.public?.ipapiKey || config.ipapiKey || "";
 			const url = ip
 				? `https://ipapi.co/${ip}/${field}/?key=${apiKey}`
 				: `https://ipapi.co/${field}/?key=${apiKey}`;
