@@ -1,6 +1,6 @@
 import { resolve } from "path";
 import tailwindcss from "@tailwindcss/vite";
-import { visualizer } from "rollup-plugin-visualizer";
+import Sonda from "sonda/nuxt";
 
 export default defineNuxtConfig({
 	compatibilityDate: "2025-07-15",
@@ -9,7 +9,15 @@ export default defineNuxtConfig({
 	// Development mode configuration
 	dev: process.env.NODE_ENV === "development",
 
-	modules: ["@nuxt/eslint", "@nuxtjs/i18n", "@nuxt/ui", "@nuxtjs/seo"],
+	modules: [
+		"@nuxt/eslint",
+		"@nuxtjs/i18n",
+		"@nuxt/ui",
+		"@nuxtjs/seo",
+		Sonda({
+			server: true,
+		}),
+	],
 
 	alias: {
 		"@": resolve(process.cwd(), "."),
@@ -42,13 +50,6 @@ export default defineNuxtConfig({
 	vite: {
 		plugins: [
 			tailwindcss(),
-			// Bundle analyzer - run 'npm run build' to generate stats.html
-			visualizer({
-				open: true,
-				filename: "stats.html",
-				gzipSize: true,
-				brotliSize: true,
-			}),
 		],
 		build: {
 			cssMinify: true,

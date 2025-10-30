@@ -8,6 +8,7 @@ dist
 
 # Bundle analyzer
 stats.html
+sonda_*.html
 
 # Node dependencies
 node_modules
