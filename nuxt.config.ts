@@ -48,9 +48,7 @@ export default defineNuxtConfig({
 	css: ["@/assets/css/main.css"],
 
 	vite: {
-		plugins: [
-			tailwindcss(),
-		],
+		plugins: [tailwindcss()],
 		build: {
 			cssMinify: true,
 			rollupOptions: {
@@ -83,7 +81,7 @@ export default defineNuxtConfig({
 		// Private keys (server only)
 		ipapiKey: process.env.IPAPI_KEY || "",
 		public: {
-			siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://yourwebsite.com",
+			siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://nuxt-multi-region-app.vercel.app",
 		},
 	},
 
@@ -100,7 +98,7 @@ export default defineNuxtConfig({
 
 	// SEO Configuration
 	site: {
-		url: process.env.NUXT_PUBLIC_SITE_URL || "https://yourwebsite.com",
+		url: process.env.NUXT_PUBLIC_SITE_URL || "https://nuxt-multi-region-app.vercel.app",
 		name: "Multi-Region Multi-Language App",
 		description:
 			"A multi-region and multi-language website supporting various countries and languages",
@@ -160,7 +158,7 @@ export default defineNuxtConfig({
 										: altLang === "de"
 											? "de-DE"
 											: "es-ES",
-						href: `${process.env.NUXT_PUBLIC_SITE_URL || "https://yourwebsite.com"}${altLang === defaultLang ? `/${country}` : `/${country}/${altLang}`}`,
+						href: `${process.env.NUXT_PUBLIC_SITE_URL || "https://nuxt-multi-region-app.vercel.app"}${altLang === defaultLang ? `/${country}` : `/${country}/${altLang}`}`,
 					}));
 
 					urls.push({
@@ -178,7 +176,7 @@ export default defineNuxtConfig({
 	robots: {
 		enabled: true,
 		disallow: [],
-		sitemap: `${process.env.NUXT_PUBLIC_SITE_URL || "https://yourwebsite.com"}/sitemap.xml`,
+		sitemap: `${process.env.NUXT_PUBLIC_SITE_URL || "https://nuxt-multi-region-app.vercel.app"}/sitemap.xml`,
 	},
 
 	// Security headers including CSP and Performance headers
@@ -213,7 +211,7 @@ export default defineNuxtConfig({
 									"style-src 'self' 'unsafe-inline' 'unsafe-hashes' data: blob:",
 									"img-src 'self' data: https: blob:",
 									"font-src 'self' data: blob:",
-									"connect-src 'self' https: ws: wss: data: blob: https://ipapi.co",
+									"connect-src 'self' https: ws: wss: data: blob: https://ipapi.co https://nuxt-multi-region-app.vercel.app",
 									"object-src 'none'",
 									"base-uri 'self'",
 									"form-action 'self'",
@@ -227,7 +225,7 @@ export default defineNuxtConfig({
 									"style-src 'self' 'unsafe-inline'",
 									"img-src 'self' data: https:",
 									"font-src 'self' data:",
-									"connect-src 'self' https://ipapi.co",
+									"connect-src 'self' https://ipapi.co https://nuxt-multi-region-app.vercel.app",
 									"object-src 'none'",
 									"base-uri 'self'",
 									"form-action 'self'",
