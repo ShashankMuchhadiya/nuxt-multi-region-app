@@ -47,7 +47,20 @@ This project is a Nuxt 4 app that supports multiple regions and languages with S
   - `url`: base site URL (defaults to `https://nuxt-multi-region-app.vercel.app`, override via `NUXT_PUBLIC_SITE_URL`).
   - `name`, `description`, `defaultLocale`.
 - Sitemap is generated with country/language alternates.
+- Schema.org structured data is generated for each page.
+- Ld-json for the page is generated for each page.
 - Robots includes the sitemap URL.
+- Composable-based SEO: useSEO() composable for page metadata
+- Canonical URLs: Proper canonical URL
+- Hreflang tags: Alternate language links for all language variants
+- X-default: Proper x-default hreflang implementation
+- Open Graph tags: Complete OG metadata (title, description, image, type, locale)
+- Twitter Cards: Twitter card metadata support
+- Robots meta: Proper robots directives (index, follow or noindex for errors)
+- Structured data (Schema.org)
+- JSON-LD structured data: Organization, WebPage, Event, BreadcrumbList schemas
+- Type-safe schemas: Proper TypeScript interfaces for schemas
+- Composable pattern: useStructuredData() for easy implementation
 
 ## Security Headers and CSP
 
@@ -70,7 +83,7 @@ If you need a stricter CSP, consider nonce- or hash-based policies.
 ## Bundle Analysis (Sonda)
 
 Sonda is integrated via `Sonda({ server: true })` in `modules`.
-
+generation
 CLI usage to analyze built client assets (optional, if you want a standalone report):
 
 ```bash
