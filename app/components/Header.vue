@@ -1,12 +1,5 @@
 <template>
-	<header
-		:class="[
-			'sticky top-0 z-50 border-b transition-all duration-300',
-			isScrolled
-				? 'bg-white/95 backdrop-blur-lg shadow-sm border-gray-200/50'
-				: 'bg-white/80 backdrop-blur-md border-gray-200',
-		]"
-	>
+	<header class="border-b border-gray-200 bg-white">
 		<div class="container mx-auto px-4">
 			<div class="flex h-16 items-center justify-between">
 				<!-- Logo -->
@@ -100,7 +93,6 @@
 						</div>
 					</div>
 				</div>
-
 			</div>
 
 			<!-- Mobile Navigation -->
@@ -182,7 +174,6 @@
 <script setup lang="ts">
 const mobileMenuOpen = ref(false);
 const dropdownOpen = ref(false);
-const isScrolled = ref(false);
 
 const { t } = useI18n(); // Use i18n translation function
 const { currentCountry, currentLanguage, countries, switchLanguage } = useMultiLocale();
@@ -191,62 +182,23 @@ const { isLoading, startLoading, stopLoading } = useLanguageLoading();
 // Check if current language is RTL
 const isRTL = computed(() => currentLanguage.value?.code === "ar");
 
-// Scroll detection for glass effect
-	if (import.meta.client) {
-		onMounted(() => {
-			let ticking = false;
-			let lastScrollY = 0;
+// Click handler to close dropdown when clicking outside
+if (import.meta.client) {
+	onMounted(() => {
+		const handleClick = (e: Event) => {
+			const target = e.target as HTMLElement;
+			if (!target.closest(".relative")) {
+				dropdownOpen.value = false;
+			}
+		};
 
-			const handleScroll = () => {
-				if (!ticking) {
-					window.requestAnimationFrame(() => {
-						const currentScrollY = window.scrollY;
-						
-						// Only update if scroll direction changed significantly
-						if (Math.abs(currentScrollY - lastScrollY) > 10) {
-							if (currentScrollY > 50) {
-								isScrolled.value = true;
-							} else {
-								isScrolled.value = false;
-							}
-							lastScrollY = currentScrollY;
-						}
+		document.addEventListener("click", handleClick);
 
-						ticking = false;
-					});
-
-					ticking = true;
-				}
-			};
-
-			// Throttle scroll events more aggressively
-			let scrollTimeout: NodeJS.Timeout;
-			const throttledScroll = () => {
-				clearTimeout(scrollTimeout);
-				scrollTimeout = setTimeout(handleScroll, 16); // ~60fps
-			};
-
-			window.addEventListener("scroll", throttledScroll, { passive: true });
-
-			// Defer click handler to avoid blocking
-			const handleClick = (e: Event) => {
-				requestIdleCallback(() => {
-					const target = e.target as HTMLElement;
-					if (!target.closest(".relative")) {
-						dropdownOpen.value = false;
-					}
-				});
-			};
-
-			document.addEventListener("click", handleClick);
-
-			onUnmounted(() => {
-				window.removeEventListener("scroll", throttledScroll);
-				document.removeEventListener("click", handleClick);
-				clearTimeout(scrollTimeout);
-			});
+		onUnmounted(() => {
+			document.removeEventListener("click", handleClick);
 		});
-	}
+	});
+}
 
 // Function to select language
 type Country = {

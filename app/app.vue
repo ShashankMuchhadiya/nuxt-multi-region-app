@@ -1,14 +1,17 @@
 <template>
-	<div v-if="isLoading" class="fixed inset-0 z-50 bg-white">
-		<LanguageSkeleton />
-	</div>
-	<div v-else>
-		<Header />
-		<main>
-			<NuxtPage />
-		</main>
-		<Footer />
-	</div>
+	<NuxtLoadingIndicator color="#00dc82" :height="2" />
+	<NuxtLayout>
+		<div v-if="isLoading" class="fixed inset-0 z-50 bg-white">
+			<LanguageSkeleton />
+		</div>
+		<div v-else>
+			<Header />
+			<main>
+				<NuxtPage />
+			</main>
+			<Footer />
+		</div>
+	</NuxtLayout>
 </template>
 
 <script setup lang="ts">
