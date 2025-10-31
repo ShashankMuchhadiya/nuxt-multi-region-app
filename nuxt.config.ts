@@ -94,6 +94,7 @@ export default defineNuxtConfig({
 				{ rel: "dns-prefetch", href: "https://ipapi.co" },
 			],
 		},
+		pageTransition: { name: "page", mode: "out-in" },
 	},
 
 	// SEO Configuration
